@@ -108,19 +108,28 @@ void mostrarContato(Contato *cont) {
 
 
 Contato* novoContato() {
+    fflush(stdin);
     Contato *novoAdd = malloc(sizeof(Contato));
     printf("Digite o nome: ");
-    scanf("%s", novoAdd->nome);
+    fgets(novoAdd->nome, 79, stdin);
+    if ((strlen(novoAdd->nome) > 0) && (novoAdd->nome[strlen(novoAdd->nome) - 1] == '\n'))
+        novoAdd->nome[strlen (novoAdd->nome) - 1] = '\0';
     fflush(stdin);
+
     printf("Digite o endereco: ");
     fflush(stdin);
-    scanf("%s", novoAdd->endereco);
+    fgets(novoAdd->endereco, 79, stdin);
+    if ((strlen(novoAdd->endereco) > 0) && (novoAdd->endereco[strlen(novoAdd->endereco) - 1] == '\n'))
+        novoAdd->endereco[strlen (novoAdd->endereco) - 1] = '\0';
+
     printf("Digite o telefone residencial: ");
     fflush(stdin);
     scanf("%s", novoAdd->telefone_res);
+
     printf("Digite o telefone celular: ");
     fflush(stdin);
     scanf("%s", novoAdd->telefone_cel);
+
     printf("Digite a data de nascimento: ");
     fflush(stdin);
     scanf("%s", novoAdd->data_nascimento);
