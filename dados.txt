@@ -1,2 +1,8 @@
-1
-garibel;a;a;a;a;
+7
+b;b;b;b;b;
+c;c;c;c;c;
+d;d;d;d;d;
+j;j;j;j;j;
+k;k;k;k;k;
+p;p;p;p;p;
+z;z;z;z;z;

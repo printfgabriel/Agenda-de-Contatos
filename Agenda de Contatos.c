@@ -312,6 +312,43 @@ int menu ()
     fflush(stdin);
     return opcao;
 }
+Contato* trocarContatosLugar(ListaEncadeada *lista ,Contato *um, Contato *dois, Contato *anterior){
+    Contato *aux = dois->proximo;
+    dois->proximo = um;
+    um->proximo = aux;
+    if (anterior == NULL){
+        printf("Considerou NULL o anterior\n");
+        lista->inicio = dois;
+        return lista->inicio;
+    }
+    anterior->proximo = dois;
+    printf("%s %s %s %s\n", anterior->nome, anterior->proximo->nome, anterior->proximo->proximo->nome, anterior->proximo->proximo->proximo->nome);
+    // free(aux);
+    return dois;
+}
+void ordernarContatos(ListaEncadeada *lista){
+    int tam, tamCmpr;
+    tam = lista->quantos;       // TAM = 3 
+    tamCmpr = tam - 1;          // TAMCMPR = 2
+    for (int i = 1; i < tam; i++) { // percorre a lista
+        Contato *aux = lista->inicio;
+        Contato *auxAnterior = NULL;
+        for(int j = 0; j < tamCmpr; j++) { // percorre a lista comparando
+            printf("RODA GATINHO RODA\n");
+            if (strcmp(aux->nome, aux->proximo->nome) > 0) { // se o proximo for menor
+                Contato *guardarAux = auxAnterior; // PROBLEMA AQUI
+                printf("SAIU DA FUNCAO: %s . %s\n", aux->nome, aux->proximo->nome);
+                aux = trocarContatosLugar(lista ,aux, aux->proximo, auxAnterior); // troca de lugar um com outro
+                printf("VOLTOU PRA FUNCAO: %s . %s\n", aux->nome, aux->proximo->nome);
+            }
+            printf("Como a lista ta: %s %s %s %s\n", lista->inicio->nome, lista->inicio->proximo->nome, lista->inicio->proximo->proximo->nome, lista->inicio->proximo->proximo->proximo->nome);
+            auxAnterior = aux;
+            aux = aux->proximo;
+        }
+        tamCmpr--;
+    }
+}
+
 int main() { 
 
     ListaEncadeada *lista = (ListaEncadeada *)  malloc(sizeof(ListaEncadeada));
@@ -344,18 +381,12 @@ int main() {
             case 7: listarContatos(lista); break;
             default: break;
         }
+        system("pause");
+        system("cls");
     }while(opcao != 8);
+    ordernarContatos(lista);
     salvarArquivo(lista);
     return 0;
 }
 
 
-
-void desalocar(int tamanho , ListaEncadeada* lista)
-{
-    for (int i = 0; i < tamanho; i++)
-    {
-        
-    }
-    
-}
