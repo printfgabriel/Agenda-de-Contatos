@@ -22,7 +22,6 @@ typedef struct Lista_S
 } ListaEncadeada;
 
 
-
 void carregarLista(ListaEncadeada *lista){
     int quantos = 0;
     char linha[500], *token;
@@ -60,9 +59,6 @@ void carregarLista(ListaEncadeada *lista){
             token = strtok(NULL, delimitador);
             sscanf(token, "%[^\n]s", teste);
             strcpy(novo->data_nascimento, teste);
-
-
-            printf("Terminou copiar %s\n", novo->nome);
             
             if (lista->quantos == 0){ // Primeiro
                 lista->inicio = novo;
@@ -74,13 +70,11 @@ void carregarLista(ListaEncadeada *lista){
 
             }
             lista->quantos++;
-            // printf("Adicionou %s \n", novo->nome);
         }
     }
     else // arquivo não existe
     {
         FILE *arq = fopen("dados.txt", "w");
-        fprintf(arq, "%s", "0");
     }
         fclose(arq);
 }
@@ -137,13 +131,15 @@ Contato* novoContato() {
     return novoAdd;
 } 
 // inserir sempre no final
-int inserirNoFim(ListaEncadeada *lista)
+void inserirNoFim(ListaEncadeada *lista)
 {
     printf("Quantos: %d\n", lista->quantos);
     Contato *novo = novoContato();
     Contato *auxFim = lista->fim;
-    if(novo == NULL)
-        return 0;
+    if(novo == NULL){
+        printf("Nao foi possivel adicionar o contato!\n");
+        return;
+    }
 
     if (lista->quantos == 0){ // Primeiro
         lista->inicio = novo;
@@ -154,46 +150,26 @@ int inserirNoFim(ListaEncadeada *lista)
         lista->fim = auxFim->proximo = novo;
     }
     lista->quantos++;
-    return 1;
+    printf("Contato adicionado!\n");
+    return;
 }
 
-int inserirNoInicio(ListaEncadeada *lista)
-{
-    Contato *novo = novoContato();
-
-    if(novo == NULL)
-        return 0;
-    
-    
-    if (lista->quantos == 0){ // primeiro item 
-        lista->inicio = novo;
-        lista->fim = novo;
-        printf("Tem nada\n");
-    }
-    else{ //ja tem outro(s) contato(s)
-        Contato *aux = lista->inicio;
-        novo->proximo = aux;
-        lista->inicio = novo;
-        printf("Tem contato, ent inicio aponta pro novo q aponta pro ex-inicio\n");
-    }
-    lista->quantos++;
-    
-    return 1;
-}
 
 // 1: se foi excluído com sucesso
 // 0: se contato não existe na lista
-void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
-    if (lista->quantos == 0)
-    {
+void excluirContato(ListaEncadeada *lista){
+    if (lista->quantos == 0) {
         printf("Ops, voce nao possui nenhum contato :(\n");
         return;
     }
     
-    // texto_t nomePesquisar;
-    // printf("Digite o nome do contato que deseja excluir: ");
-    // scanf("%s", nomePesquisar);
+    texto_t nomePesquisar;
+    printf("Digite o nome do contato que deseja excluir: ");
     fflush(stdin);
+    fgets(nomePesquisar, 79, stdin);
+    if ((strlen(nomePesquisar) > 0) && (nomePesquisar[strlen(nomePesquisar) - 1] == '\n'))
+        nomePesquisar[strlen (nomePesquisar) - 1] = '\0';
+
     Contato *aux = lista->inicio;
     Contato *auxAnt = lista->inicio;
     int cont = 0;
@@ -208,6 +184,7 @@ void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
                 lista->inicio = NULL;
                 lista->fim = NULL;
                 lista->quantos = 0;
+                printf("Contato removido!\n");
                 return;
             }
 
@@ -215,6 +192,7 @@ void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
             {
                 lista->inicio = aux->proximo;
                 lista->quantos--;
+                printf("Contato removido!\n");
                 return;
             }
             
@@ -224,6 +202,7 @@ void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
                 auxAnt->proximo = NULL;
                 lista->fim = auxAnt;
                 lista->quantos--;
+                printf("Contato removido!\n");
                 return;
             }
             else // Se ele tiver no meio da lista, o prox do anterior é o prox dele 
@@ -231,6 +210,7 @@ void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
                 auxAnt->proximo = NULL;
                 auxAnt->proximo = aux->proximo;
                 lista->quantos--;
+                printf("Contato removido!\n");
                 return;
             } 
         }
@@ -241,38 +221,43 @@ void excluirContato(ListaEncadeada *lista, texto_t nomePesquisar){
     return;
 };
 
-void excluirNoFim(ListaEncadeada *lista) {
-    Contato *aux = lista->fim;
-    excluirContato(lista, aux->nome);
-}
-void excluirNoInicio(ListaEncadeada *lista){
-    Contato *aux = lista->inicio;
-    excluirContato(lista, aux->nome);
-}
 // NULL: se contato não existe na lista
 // !NULL: contato existe na lista
 
-Contato* pesquisarContato(ListaEncadeada *Lista){
+void pesquisarContato(ListaEncadeada *lista){
+    if (lista->quantos == 0){
+        printf("Ops, voce nao possui nenhum contato :(\n");
+        return;
+    }
     texto_t nomePesquisar;
+    
     printf("Digite o nome a ser pesquisado: ");
-    scanf("%s", nomePesquisar);
     fflush(stdin);
-    Contato *aux = Lista->inicio;
+    fgets(nomePesquisar, 79, stdin);
+    if ((strlen(nomePesquisar) > 0) && (nomePesquisar[strlen(nomePesquisar) - 1] == '\n'))
+        nomePesquisar[strlen (nomePesquisar) - 1] = '\0';
+    Contato *aux = lista->inicio;
 
     while (aux != NULL)
     {
         if (strcmp(aux->nome, nomePesquisar) == 0)
         {
             mostrarContato(aux);
-            return aux;
+            return;
         }
         
         aux = aux->proximo;
     }
     printf("Esse contato nao existe!");
-    return NULL;
+    return;
 }
 void listarContatos(ListaEncadeada *lista){
+    if (lista->quantos == 0)
+    {
+        printf("Ops, voce nao possui nenhum contato :(\n");
+        return;
+    }
+    
     Contato *aux = lista->inicio;
     while(aux != NULL){
         mostrarContato(aux);
@@ -298,14 +283,12 @@ int menu ()
 {
     int opcao;
     printf("\n--- Agenda de Contatos ---\n");
-    printf("\n1. Adicionar no fim\n");
-    printf("2. Adicionar no inicio\n");
-    printf("3. Remover\n");
-    printf("4. Remover do inicio\n");
-    printf("5. Remover do fim\n");
-    printf("6. Pesquisar\n");
-    printf("7. Listar contatos\n");
-    printf("8. Sair\n");
+    printf("\n1. Adicionar\n");
+    printf("2. Remover\n");
+    printf("3. Pesquisar\n");
+    printf("4. Alterar contato\n");
+    printf("5. Listar contatos\n");
+    printf("6. Sair\n");
     printf("Opcao: ");
 
     scanf("%d", &opcao);
@@ -317,13 +300,10 @@ Contato* trocarContatosLugar(ListaEncadeada *lista ,Contato *um, Contato *dois, 
     dois->proximo = um;
     um->proximo = aux;
     if (anterior == NULL){
-        printf("Considerou NULL o anterior\n");
         lista->inicio = dois;
         return lista->inicio;
     }
     anterior->proximo = dois;
-    printf("%s %s %s %s\n", anterior->nome, anterior->proximo->nome, anterior->proximo->proximo->nome, anterior->proximo->proximo->proximo->nome);
-    // free(aux);
     return dois;
 }
 void ordernarContatos(ListaEncadeada *lista){
@@ -334,19 +314,74 @@ void ordernarContatos(ListaEncadeada *lista){
         Contato *aux = lista->inicio;
         Contato *auxAnterior = NULL;
         for(int j = 0; j < tamCmpr; j++) { // percorre a lista comparando
-            printf("RODA GATINHO RODA\n");
-            if (strcmp(aux->nome, aux->proximo->nome) > 0) { // se o proximo for menor
-                Contato *guardarAux = auxAnterior; // PROBLEMA AQUI
-                printf("SAIU DA FUNCAO: %s . %s\n", aux->nome, aux->proximo->nome);
+            if (strcasecmp(aux->nome, aux->proximo->nome) > 0) { // se o proximo for menor
                 aux = trocarContatosLugar(lista ,aux, aux->proximo, auxAnterior); // troca de lugar um com outro
-                printf("VOLTOU PRA FUNCAO: %s . %s\n", aux->nome, aux->proximo->nome);
             }
-            printf("Como a lista ta: %s %s %s %s\n", lista->inicio->nome, lista->inicio->proximo->nome, lista->inicio->proximo->proximo->nome, lista->inicio->proximo->proximo->proximo->nome);
             auxAnterior = aux;
             aux = aux->proximo;
         }
         tamCmpr--;
     }
+}
+void alterarContato(ListaEncadeada *lista) {
+    if (lista->quantos == 0) { // Caso nao tenha contatos
+        printf("Ops, voce nao possui nenhum contato :(\n");
+        return;
+    }
+    int cont = 0;
+    Contato *aux = lista->inicio;
+    Contato *auxAnt = NULL;
+    texto_t nomeAlterar;
+    
+    printf("Digite o nome do contato que deseja alterar: ");
+    fgets(nomeAlterar, 79, stdin);
+    if ((strlen(nomeAlterar) > 0) && (nomeAlterar[strlen(nomeAlterar) - 1] == '\n'))
+        nomeAlterar[strlen (nomeAlterar) - 1] = '\0';
+
+    while (aux != NULL)
+    {
+        cont++;
+        if (strcmp(nomeAlterar, aux->nome) == 0) // Quando achar o contato
+        {
+            printf("\n*Modifique o contato*\n");
+            Contato *novo = novoContato();
+            if(lista->quantos == 1){ // Ser tiver apenas 1 contato
+                lista->inicio = novo;
+                lista->fim = novo;
+                free(aux), free(auxAnt);
+                return;
+            }
+            if (cont == 1) // se for o primeiro item, o inicio tem q apontar pro novo q tem q apontar pro proximo do aux
+            {
+                lista->inicio = novo;
+                lista->inicio->proximo = aux->proximo;
+                free(aux);
+                printf("Contato alterado!\n");
+                return;
+            }
+            
+            if(aux->proximo == NULL) // se for o ultimo da lista, o ant é o novo e o fim aponta pro novo
+            {
+                free(aux);
+                auxAnt->proximo = novo;
+                lista->fim = auxAnt;
+                printf("Contato alterado!\n");
+                return;
+            }
+            else // Se ele tiver no meio da lista, o ant aponta pro novo que aponta pro aux.proximo
+            {    
+                auxAnt->proximo = novo;
+                novo->proximo = aux->proximo;
+                printf("Contato alterado!\n");
+                free(aux);
+                return;
+            } 
+            
+        }
+        auxAnt = aux;
+        aux = aux->proximo;
+    }
+    printf("Esse contato nao existe, verifique a ortografia ou tente adiciona-lo!\n");
 }
 
 int main() { 
@@ -355,8 +390,6 @@ int main() {
     lista->quantos = 0;
     lista->inicio = lista->fim = NULL;
     carregarLista(lista);
-    Contato *contatoAux = malloc(sizeof(Contato));
-    texto_t nomeAux;
     int opcao;
     do{
         printf("Quantos: %d\n", lista->quantos);
@@ -364,29 +397,17 @@ int main() {
         fflush(stdin);
         switch (opcao)
         {
-            case 1: contatoAux = inserirNoFim(lista);
-                if(contatoAux != NULL)
-                    printf("Contato adicionado ao fim da lista!");
-                else 
-                    printf("Nao foi possivel adicionar o contato!"); 
-                break;
-            case 2: inserirNoInicio(lista); break;
-            case 3: printf("Digite o nome do contato que deseja exluir: ");
-                    scanf("%s", nomeAux); 
-                    excluirContato(lista, nomeAux);
-                    break;
-            case 4: excluirNoInicio(lista); break;
-            case 5: excluirNoFim(lista); break;
-            case 6: pesquisarContato(lista); break;
-            case 7: listarContatos(lista); break;
+            case 1: inserirNoFim(lista); break;
+            case 2: excluirContato(lista); break;
+            case 3: pesquisarContato(lista); break;
+            case 4: alterarContato(lista); break;
+            case 5: listarContatos(lista); break;
             default: break;
         }
         system("pause");
         system("cls");
-    }while(opcao != 8);
+    }while(opcao != 6);
     ordernarContatos(lista);
     salvarArquivo(lista);
     return 0;
 }
-
-
